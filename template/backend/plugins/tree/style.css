@@ -1,0 +1,219 @@
+/*Now the CSS*/
+.familytree{
+	zoom:85%;
+	overflow:auto;
+}
+
+.familytree ul {
+	padding-top: 20px; 
+	position: relative;
+	
+	-transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+}
+@media(max-width:767px) {
+	.familytree ul {
+		transform: scale(.8);
+	}
+}
+/*.familytree li {
+	float: left; 
+	text-align: center;
+	list-style-type: none;
+	position: relative;
+	padding: 20px 5px 0 5px;
+	
+	-transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+}*/
+
+
+.familytree li::before, .familytree li::after{
+	content: '';
+	position: absolute; top: 0; right: 50%;
+	border-top: 1px solid #ccc;
+	width: 50%; height: 20px;
+}
+.familytree li::after{
+	right: auto; left: 50%;
+	border-left: 1px solid #ccc;
+}
+
+.familytree li:only-child::after, .familytree li:only-child::before {
+	display: none;
+}
+
+.familytree li:only-child{ padding-top: 0;}
+
+.familytree li:first-child::before, .familytree li:last-child::after{
+	border: 0 none;
+}
+.familytree li:last-child::before{
+	border-right: 1px solid #ccc;
+	border-radius: 0 5px 0 0;
+	-webkit-border-radius: 0 5px 0 0;
+	-moz-border-radius: 0 5px 0 0;
+}
+.familytree li:first-child::after{
+	border-radius: 5px 0 0 0;
+	-webkit-border-radius: 5px 0 0 0;
+	-moz-border-radius: 5px 0 0 0;
+}
+
+.familytree ul ul::before{
+	content: '';
+	position: absolute; top: 0; left: 50%;
+	border-left: 1px solid #ccc;
+	width: 0; height: 15px;
+}
+
+.familytree li a{
+	border: 1px solid #ccc;
+	padding: 5px 10px;
+	margin-top:5px;
+	text-decoration: none;
+	color: #666;
+	font-family: arial, verdana, tahoma;
+	font-size: 11px;
+	display: inline-block;
+	
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	
+	-transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+}
+
+.familytree li a:hover, .familytree li a:hover+ul li a {
+	/*background: #e9453f; 
+	color: #fff; */
+	border: 1px solid #e9453f;
+}
+
+.familytree li a:hover+ul li::after, 
+.familytree li a:hover+ul li::before, 
+.familytree li a:hover+ul::before, 
+.familytree li a:hover+ul ul::before{
+	border-color:  #e9453f;
+}
+
+
+$border-width: 1px;
+$reverse: false;
+
+.familytree{
+  @if $reverse {
+    transform: rotate(180deg);
+    transform-origin: 50%;
+  }
+}
+
+.familytree ul {
+  position: relative;
+	padding: 1em 0; 
+  white-space: nowrap;
+  margin: 0 auto;
+  text-align: center;
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+.familytree li {
+  display: inline-block; 
+  vertical-align: top;
+  text-align: center;
+	list-style-type: none;
+	position: relative;
+	padding: 1em .5em 0 .5em;
+  &::before,
+  &::after {
+    content: '';
+    position: absolute; 
+    top: 0; 
+    right: 50%;
+    border-top: $border-width solid #ccc;
+    width: 50%; 
+    height: 1em;
+  }
+  &::after {
+    right: auto; 
+    left: 50%;
+	  border-left: $border-width solid #ccc;
+  }
+  &:only-child::after,
+  &:only-child::before {
+    display: none;
+  }
+  &:only-child {
+    padding-top: 0;
+  }
+  &:first-child::before,
+  &:last-child::after {
+    border: 0 none;
+  }
+  &:last-child::before{
+    border-right: $border-width solid #ccc;
+    border-radius: 0 5px 0 0;
+  }
+  &:first-child::after{
+    border-radius: 5px 0 0 0;
+  }
+}
+
+/*.familytree ul ul::before{
+	content: '';
+	position: absolute; 
+  top: 0; 
+  left: 50%;
+	border-left: $border-width solid #ccc;
+	width: 0; 
+  height: 1em;
+}
+
+.familytree li a {
+	border: $border-width solid #ccc;
+	padding: .5em .75em;
+	text-decoration: none;
+	display: inline-block;
+	border-radius: 5px;
+  color: #333;
+  position: relative;
+  top: $border-width;
+  @if $reverse {
+    transform: rotate(180deg);
+  }
+}*/
+
+.familytree li a:hover,
+.familytree li a:hover+ul li a {
+	/*background: #e9453f;
+  color: #fff;*/
+  border: $border-width solid #e9453f;
+}
+
+.familytree li a:hover + ul li::after, 
+.familytree li a:hover + ul li::before, 
+.familytree li a:hover + ul::before, 
+.familytree li a:hover + ul ul::before{
+	border-color:  #e9453f;
+}
+
+.familytree li img{
+	width:30px;
+	margin:0 auto;
+}
+.familytree .green-bg{
+	background-color:#79B900;
+	color:#FFF;
+}
+.familytree .red-bg{
+	background-color:#FF2424;
+	color:#FFF;
+}
