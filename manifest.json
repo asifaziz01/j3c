@@ -1,0 +1,38 @@
+{
+  "name": "Just3Click",
+  "short_name": "J3C",
+  "lang": "en-US",
+  "start_url": "http://localhost/repos/j3c/",
+  "display": "standalone",
+  "theme_color": "#4285F4",
+  "orientation": "portrait-primary",
+  "background_color": "#4285F4",
+  "icons": [
+    {
+      "src": "http://localhost/repos/j3c/template/default/images/touch/icon128.png",
+      "sizes": "128x128"
+    },
+    {
+      "src": "http://localhost/repos/j3c/template/default/images/touch/icon192.png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "http://localhost/repos/j3c/template/default/images/touch/icon256.png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "http://localhost/repos/j3c/template/default/images/touch/icon384.png",
+      "sizes": "384x384"
+    },
+    {
+      "src": "http://localhost/repos/j3c/template/default/images/touch/icon512.png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "http://localhost/repos/j3c/template/default/images/touch/icon512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

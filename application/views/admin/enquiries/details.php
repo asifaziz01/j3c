@@ -50,6 +50,30 @@
                             </table>
                         </td>
                         </tr>
+                        <?php
+                        $tech_plan = $this->enquiry_m->get_technician_plan(false,$this->session->userdata('id'));
+                        if($tech_plan && $tech_plan[count($tech_plan)-1]['plan_type']==2){
+                            ?>
+                            <tr>
+                                <td><strong>Recieve Appliance</strong></td>
+                                <td>
+                                <?php
+                                if($enc['recieved']){
+                                    echo '<p>'.$enc['recieve_detail'].'</p>';
+                                    echo '<p>
+                                            <a target="_blank" href="'.site_url($this->config->item('filemanager').'/content_image/'.$enc['recieve_app_image']).'">
+                                            <img src="'.site_url($this->config->item('filemanager').'/content_image/'.$enc['recieve_app_image']).'" width="150px"/>
+                                            </a>
+                                          </p>';
+                                }else{
+                                    echo '<a href="'.site_url('admin/enquiries/appRecieve/'.$enc['id']).'" class="btn btn-sm btn-primary btn-alt">Recieve Now</a>';
+                                }
+                                ?>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
                         <tr><td><strong>Job Status</strong></td><td><?php if($enc['status']==2){echo 'Job Done';}else if($enc['status']==1){echo 'In Proccessing';}else{echo 'Pending';}?></td></tr>
                         <?php
                         if($this->session->userdata('id')!=STATUS_TECHNICIAN){

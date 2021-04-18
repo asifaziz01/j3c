@@ -39,6 +39,7 @@
                                     <td>
                                         <a class="btn btn-xs btn-primary" data-toggle="tooltip" title="View Details" href="<?php echo site_url('admin/services/appliance_detail/'.$appliance['appliance_id']);?>"><i class="icon-search"></i></a>
                                         <a class="btn btn-xs btn-success" data-toggle="tooltip" title="Update Detail" href="<?php echo site_url('admin/services/edit_appliance/'.$appliance['category_id'].'/'.$appliance['appliance_id']);?>"><i class="icon-pencil"></i></a>
+                                        <a class="btn btn-xs btn-danger" data-toggle="tooltip" title="Delete" href="javascript:void(0);" onclick="showConfirm('<?php echo site_url('admin/services/deleteAppliance/'.$appliance['appliance_id']);?>','Are you sure want to delete <?php echo $appliance['appliance_name']; ?>');"><i class="icon-trash"></i></a>
                                     </td>
                                 </tr>
                                 <?php

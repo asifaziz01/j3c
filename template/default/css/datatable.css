@@ -1,4 +1,4 @@
-table {
+table.responsive {
 	border: 1px solid #ccc;
 	width: 100%;
 	margin: 0;
@@ -8,18 +8,18 @@ table {
 	margin-bottom:25px;
   }
   
-  table tr {
+  table.responsive tr {
 	border: 1px solid #ddd;
 	padding: 5px;
   }
   
-  table th,
-  table td {
+  table.responsive th,
+  table.responsive td {
 	padding: 10px;
 	text-align: center;
   }
   
-  table th {
+  table.responsive th {
 	text-transform: uppercase;
 	font-size: 14px;
 	letter-spacing: 1px;
@@ -28,26 +28,26 @@ table {
 
   @media screen and (max-width: 600px) {
 
-	table { border: 0; }
+	table.responsive { border: 0; }
 	
-	table thead { display: none; }
+	table.responsive thead { display: none; }
 	
-	table tr {
+	table.responsive tr {
 	  margin-bottom: 10px;
 	  display: block;
 	  border-bottom: 2px solid #ddd;
 	}
 	
-	table td {
+	table.responsive td {
 	  display: block;
 	  text-align: right;
 	  font-size: 13px;
 	  border-bottom: 1px dotted #ccc;
 	}
 	
-	table td:last-child { border-bottom: 0; }
+	table.responsive td:last-child { border-bottom: 0; }
 	
-	table td:before {
+	table.responsive td:before {
 	  content: attr(data-label);
 	  float: left;
 	  text-transform: uppercase;

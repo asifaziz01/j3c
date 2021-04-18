@@ -28,11 +28,21 @@
 							<div class="col-md-3">User Type</div>
 							<div class="col-md-9">
 							<select class="form-control" name="user_type">';
-						foreach($user_types as $usrtyp){
-						?>
-						<option value="<?php echo $usrtyp['id'];?>"><?php echo $usrtyp['title'];?></option>
-						<?php
-						}
+							if($this->session->userdata('status')==STATUS_STAFF){
+								foreach($user_types as $usrtyp){
+									if($usrtyp['id']==STATUS_STAFF){
+									?>
+										<option value="<?php echo $usrtyp['id'];?>"><?php echo $usrtyp['title'];?></option>
+									<?php
+									}
+								}
+							}else{
+								foreach($user_types as $usrtyp){
+								?>
+									<option value="<?php echo $usrtyp['id'];?>"><?php echo $usrtyp['title'];?></option>
+								<?php
+								}
+							}
 						echo '</select>';
 					echo '</div></div>';
 				}

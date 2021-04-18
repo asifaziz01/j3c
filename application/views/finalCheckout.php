@@ -33,8 +33,8 @@
                             $issue = $this->appliance_m->get_issues(false,$ord[3]);
                             $price .= (($issue['offer_price'])?$issue['offer_price'].',':$issue['price']).',';
                             $totalprice +=$issue['price'];
-                            $totaloffer +=$issue['offer_price'];
-                            $discount +=($issue['offer_price'])?($issue['price']-$issue['offer_price']):0;
+                            $totaloffer +=(!empty($issue['offer_price']))?$issue['offer_price']:0;
+                            $discount +=(!empty($issue['offer_price']))?($issue['price']-$issue['offer_price']):0;
                           }
                           $totalpaid = ($discount)?($totalprice-$discount):$totalprice;
                         }
@@ -81,6 +81,7 @@
                     <hr />
                     <h2>Contact Information</h2>
                     <p>This information will be used to contact you about your service</p>
+                    <p class="msg"></p>
                     <div class="form-group col-md-6 col-sm-6 col-xs-12">
                       <input class="form-control" id="name" name="customer_name" placeholder="Name*" type="text"/>
                     </div>
@@ -111,9 +112,10 @@
                         ?>
                       </select>
                     </div>
-                    <input type="hidden" name="map_location" value="">
-                    <div id="map" style="width:100%;height:400px;"></div>
-                    <div class="clearfix"></div>
+                    <div class="form-group">
+                      <input type="hidden" name="map_location" value="">
+                      <div id="map" style="width:100%;height:200px;"></div>
+                    </div>
                     <hr />
                     <!--BOOK NOW-->
                     <div class="booking_summary hidden-lg hidden-md" style="position:fixed;bottom:0px;left:0px;z-index:1005;background-color:#1E1E1E;color:#fff; width:100%;font-size:1.5em;">
@@ -455,7 +457,7 @@ function issuesList(val){
 				if(statusTxt == "success"){
 					$('#loader').css("display","none");
 					if(!responseTxt){
-						alert('Invalid OTP, please enter valid OTP or resend OTP.');
+						$('.msg').html('<div class="alert alert-danger">Invalid OTP!</div>');
             this.focus();
 					}else{
       			$('input[name=mobile]').attr('readonly',true);
@@ -463,7 +465,7 @@ function issuesList(val){
 						$('#location').attr('disabled',false);
 						$('#address').attr('disabled',false);
 						$('#submit').attr('disabled',false);
-            alert('OTP successfully Verified!');
+            $('.msg').html('<div class="alert alert-success">OTP Verify!</div>');
 						//$('input[name=make_payment]').attr('disabled',false);
 					}
 				}

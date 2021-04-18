@@ -62,6 +62,7 @@ class User_m extends CI_Model {
 			"adhaar"=>$this->input->post("adhaar"),
 			"pan"=>$this->input->post("pan"),
 			"gst"=>$this->input->post("gst"),
+			"email"=>$this->input->post("email"),
 			"company"=>$this->input->post("company"),
 			"address"=>$this->input->post("address")
 			);
@@ -211,6 +212,53 @@ class User_m extends CI_Model {
 		if($sql->num_rows()>0){
 			$res = ($fid)?$sql->row_array():$sql->result_array();
 			return $res;
+		}else{
+			return false;
+		}
+	}
+	public function feedbackVerify($id=false){
+		if($id){
+			$this->db->where('id',$id)->update('feedback',array('status'=>1));
+			return true;
+		}else{
+			return false;
+		}
+	}
+	public function createStaffPost($id=false){
+		if($id){
+			$this->db->where('id',$id);
+		}
+		$values = array(
+			"title"=>$this->input->post('title'),
+			"previliges"=>implode(",",$this->input->post('mnu'))
+		);
+		$sql = ($id)?$this->db->update('staff_post',$values):$this->db->insert('staff_post',$values);
+	}
+	public function getStaffPost($id=false){
+		if($id){
+			$this->db->where('id',$id);
+		}
+		$sql = $this->db->get('staff_post');
+		if($sql->num_rows()>0){
+			$res = ($id)?$sql->row_array():$sql->result_array();
+			return $res;
+		}else{
+			return false;
+		}
+	}
+	public function delete_post($id=false){
+		if($id){
+			$this->db->where('id',$id)->delete('staff_post');
+			$this->db->where('post',$id)->update('user',array('post'=>'0'));
+			return true;
+		}else{
+			return false;
+		}
+	}
+	public function update_post($pid=false,$uid=false){
+		if($pid && $uid){
+			$this->db->where('id',$uid)->update('user',array('post'=>$pid));
+			return true;
 		}else{
 			return false;
 		}

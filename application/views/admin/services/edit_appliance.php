@@ -48,33 +48,34 @@
               </select>
             </div>
           </div>
-          <!--<div class="form-group">
-            <label  class="col-md-4 col-sm-12 col-xs-12">Content Heading</label>
+          <div class="form-group">
+            <label  class="col-md-4 col-sm-12 col-xs-12">Slider Content</label>
+            <div class="col-md-8 col-sm-12 col-xs-12">
+              <textarea class="form-control editor" name="content" rows="8"><?php echo $appliance['content'];?></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label  class="col-md-4 col-sm-12 col-xs-12">Heading</label>
             <div class="col-md-8 col-sm-12 col-xs-12">
               <input type="text" class="form-control" name="heading_content" value="<?php echo $appliance['head_content'];?>" />
             </div>
           </div>
           <div class="form-group">
-            <label  class="col-md-4 col-sm-12 col-xs-12">Content Points</label>
-            <div class="col-md-8 col-sm-12 col-xs-12">
-              <textarea class="form-control wysiwyg" name="content" rows="8"><?php echo $appliance['content'];?></textarea>
-            </div>
-          </div>
-          <div class="form-group">
             <label  class="col-md-4 col-sm-12 col-xs-12">Body Content</label>
             <div class="col-md-8 col-sm-12 col-xs-12">
-              <textarea class="form-control wysiwyg" name="body_content" rows="8"><?php echo $appliance['body_content'];?></textarea>
+              <textarea class="form-control editor" name="body_content" rows="8"><?php echo $appliance['body_content'];?></textarea>
             </div>
           </div>
           <div class="form-group">
             <label  class="col-md-4 col-sm-12 col-xs-12">Content Image</label>
             <div class="col-md-5 col-sm-8 col-xs-8">
               <input type="file" name="img" value="" />
+              <small>Image size should max-height = 594, max-width = 365</small>
             </div>
             <div class="col-md-3 col-sm-4 col-xs-4">
               <img width="50px" src="<?php echo base_url($this->config->item('filemanager').'content_image/'.$appliance['body_content_image']);?>" />
             </div>
-          </div>-->
+          </div>
           <div class="form-actions">
               <a class="btn btn-danger" href="<?php echo site_url('admin/services/appliances');?>" >Cancel</a>
               <input type="submit" class="btn btn-primary pull-right"  name="submit" value="Update Details">
@@ -91,4 +92,32 @@ $(document).ready(function() {
       $('input[name=iconname]').val(filename)
     }); 
 }); 
+</script>
+<script type="text/javascript" src="<?php echo site_url($this->config->item('backend_path').'assets/js/tinymce.min.js');?>"></script>
+<script>
+tinymce.init({
+    selector:'.editor',
+    menubar: false,
+    statusbar: false,
+    plugins: 'autoresize anchor autolink charmap code codesample directionality fullpage help hr image imagetools insertdatetime link lists media nonbreaking pagebreak preview print searchreplace table template textpattern toc visualblocks visualchars',
+    toolbar: 'h1 h2 bold italic strikethrough blockquote bullist numlist backcolor | removeformat help fullscreen ',
+    skin: 'bootstrap',
+    toolbar_drawer: 'floating',
+    min_height: 150,           
+    max_height: 300,           
+    autoresize_bottom_margin: 16,
+    setup: (editor) => {
+        editor.on('init', () => {
+            editor.getContainer().style.transition="border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out"
+        });
+        editor.on('focus', () => {
+            editor.getContainer().style.boxShadow="0 0 0 .2rem rgba(0, 123, 255, .25)",
+            editor.getContainer().style.borderColor="#80bdff"
+        });
+        editor.on('blur', () => {
+            editor.getContainer().style.boxShadow="",
+            editor.getContainer().style.borderColor=""
+        });
+    }
+});
 </script>

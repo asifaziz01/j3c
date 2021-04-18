@@ -13,7 +13,7 @@
                         $tech_plan = $this->plan_m->get_technician_plan(false,$id);
                         $tech_plan_type = ($tech_plan && count($tech_plan)>0)?$tech_plan[0]['plan_type']:false;
                         ?>
-                        <select class="form-control" name="plan">
+                        <select class="form-control" name="plan" onchange="getPlanDetail(this.value)">
                         <option value="">Select Plan</option>
                         <?php
                             if (! empty ($plans)) {
@@ -27,6 +27,7 @@
                         ?>
                         </select>
                     </div>
+                    <div class="form-group" id="planDetail"></div>
                     <div class="form-group">
                         <p>Technician : <?php echo $technician['name'];?> </p>
                     </div>
@@ -76,3 +77,16 @@
         </div>
     </div>
 </div>
+<script>
+function getPlanDetail(pid){
+    $('#loader').css('display','block');
+    $.get('<?php echo site_url('admin/plan/planDetail/');?>'+pid,function(data,status){
+        if(status=='success'){
+            if(data){
+                $('#planDetail').html(data);
+            }
+        }
+        $('#loader').css('display','none');
+    })
+}
+</script>

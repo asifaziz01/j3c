@@ -79,7 +79,37 @@ if($tech_plan_type){
                         $isOnJob = $this->enquiry_m->get_enquiries(false,array("technician_id"=>$this->session->userdata('id'),"status"=>"1"));
                         foreach ($enquiries as $enc) {
                             $strt=1;$temp_itms=array();
-                            if(($tech_appliance) && (in_array($enc['location'],$tech_locations))){
+                            if(in_array($this->session->userdata('status'),array(STATUS_ADMIN,STATUS_SUPER,STATUS_STAFF))){
+                                $tid = $enc['customer_id'];$issues=[];
+                                $items = explode(",",$enc["items"]);
+                                foreach($items as $item)
+                                {
+                                    $item = explode("-",$item);
+                                    $issue = $this->appliance_m->get_issues($enc['appliance_id'],$item[3]);
+                                    $issues[] =$issue['issue_title'];
+                                }
+                                $issues = implode('<br />',$issues);
+                                $appliance = $this->appliance_m->get_appliance($item[0]);
+                                $brand = $this->appliance_m->get_brands($enc['appliance_id'],$item[1]);
+                                $type = $this->appliance_m->get_appliance_types($enc['appliance_id'],$item[2]);
+                                echo '<tr>';
+                                ?>
+                                <td><?php echo $sr++;?></td>
+                                <td><?php echo date('d M Y H:i:s',$enc['enquiry_date']);?></td>
+                                <td><?php echo $enc['customer_name'];?></td>
+                                <td><?php echo $appliance['appliance_name'];?></td>
+                                <!--<td rowspan="<?php echo count($items);?>"><?php echo ($enc['status'])?(($enc['technician_id']==$this->session->userdata['id'])?$enc['mobile']:'---'):'<small class="text text-primary">After Accept</small>';?></td>
+                                <td rowspan="<?php echo count($items);?>"><?php echo $enc['address'];?></td>-->
+                                <!--<td><?php echo $brand['brand_name'];?></td>
+                                <td><?php echo $type['type_name'];?></td>-->
+                                <td><?php echo $issues;?></td>
+                                <td>
+                                    <a href="<?php echo site_url("admin/enquiries/details/".$enc['id']);?>" class="btn btn-primary btn-xs" title="Details"><i class="icon-list"></i></a>
+                                </td>
+                                <?php
+                                echo '</tr>';
+                                $strt++;
+                            }else if(($tech_appliance) && (in_array($enc['location'],$tech_locations))){
                                 //if(!$enc['status'] || ($enc['status'] && $enc['technician_id']==$this->session->userdata['id']))
                                 //{
                             
@@ -130,8 +160,23 @@ if($tech_plan_type){
                                                 }else{ 
                                                     if($enc['status']==2){ ?>
                                                         <span class="label label-success label-sm">Done</span>
-                                                    <?php }else{ ?>
-                                                        <a href="<?php echo site_url('admin/enquiries/jobClose/'.$enc['id']);?>" data-toggle="tooltips" title="Close Now" class="btn btn-warning btn-xs"><i class="fa fa-check"></i> Close</a>
+                                                    <?php }else{ 
+                                                        if($tech_plan_type==1){
+                                                        ?>
+                                                            <a href="<?php echo site_url('admin/enquiries/jobClose/'.$enc['id']);?>" data-toggle="tooltips" title="Close Now" class="btn btn-warning btn-xs"><i class="fa fa-check"></i> Close</a>
+                                                        <?php
+                                                        }else{
+                                                            if($enc['recieved']){
+                                                               ?>
+                                                                <a href="<?php echo site_url('admin/enquiries/jobDiliver/'.$enc['id']);?>" data-toggle="tooltips" title="Close Now" class="btn btn-warning btn-xs"><i class="fa fa-check"></i> Diliver</a>
+                                                               <?php 
+                                                            }else if(!$enc['recieved']){
+                                                                ?>
+                                                                <a href="<?php echo site_url('admin/enquiries/appRecieve/'.$enc['id']);?>" data-toggle="tooltips" title="Close Now" class="btn btn-warning btn-xs"><i class="fa fa-check"></i> Recieve</a>
+                                                                <?php
+                                                            }
+                                                        }
+                                                        ?>
                                                         <a href="javascript:void(0);" onclick="showRouteDirection('<?php echo $me['map_location'];?>','<?php echo $enc['map_location'];?>')" data-toggle="modal" data-target="#maplocation" class="btn btn-primary btn-xs"><i class="icon-map-marker"></i> Track</a>
                                                     <?php
                                                     }

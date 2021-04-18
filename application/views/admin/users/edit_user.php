@@ -308,6 +308,42 @@ $user_type = $this->settings_m->getUserType($user['status']);
 		</div>
 	</div>
 	<?php
+	}else if($user['status']==STATUS_STAFF){
+		$posts = $this->user_m->getStaffPost();
+	?>
+	<div class="row">
+		<div class="widget box">
+			<div class="widget-header">
+				<h4><i class="icon-user"></i> Staff Previliges</h4>
+				<div class="toolbar no-padding">
+					<div class="btn-group">
+						<span class="btn btn-xs widget-collapse"><i class="icon-angle-down"></i></span>
+					</div>
+				</div>
+			</div>
+			<div class="widget-content">
+				<form class="form-horizontal" action="<?php echo site_url("admin/user/updateServiceDetail/".$id);?>" method="post" >
+					<div id="staffMSG"></div>
+					<div class="form-group">
+						<label for="" class="label-control col-md-3 col-sm-12 col-xs-12">Post Of Staff</label>
+						<div class="col-md-9 col-sm-12 col-xs-12">
+							<select name="post" id="staff_post" class="form-control">
+							<?php
+							if($posts){
+								echo '<option value="0">Select Post</option>';
+								foreach($posts as $post){
+									echo '<option value="'.$post['id'].'">'.$post['title'].'</option>';
+								}
+							}
+							?>
+							</select>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<?php
 	}
 	?>
 </div>
@@ -472,15 +508,25 @@ $user_type = $this->settings_m->getUserType($user['status']);
 		});
 	}
 	var addtechFormSelector = document.getElementById ('tech_cat');
-	if (addSkillFormSelector) {	
-		addSkillFormSelector.addEventListener ('change', e => {
+	if (addtechFormSelector) {
+		addtechFormSelector.addEventListener ('change', e => {
 			e.preventDefault ();
-			$.get( '<?php echo site_url('admin/services/update_category/');?>'+$('#tech_cat').val()+'/'+'<?php echo $user['id'];?>', function(data, status){
+			$.get( '<?php echo site_url('admin/services/update_category/');?>'+addtechFormSelector.value+'/<?php echo $user['id'];?>', function(data, status){
 				if(status=='success'){
 					var msg = '<div class="alert alert-success fade in"><button class="close" aria-hidden="true" data-dismiss="alert" type="button"><i class="fa fa-times-circle" data-dismiss="alert"></i></button><i class="icon-remove close" data-dismiss="alert"></i> Update Category Successfully!</div>';
 					$('#category_div').html(msg+$('#category_div').html());
-				}else{
-
+				}
+			});
+		});
+	}
+	var staffPostSelector = document.getElementById ('staff_post');
+	if (staffPostSelector) {	
+		staffPostSelector.addEventListener ('change', e => {
+			e.preventDefault ();
+			$.get( '<?php echo site_url('admin/user/update_post/');?>'+$('#staff_post').val()+'/'+'<?php echo $user['id'];?>', function(data, status){
+				if(status=='success'){
+					var msg = '<div class="alert alert-success fade in"><button class="close" aria-hidden="true" data-dismiss="alert" type="button"><i class="fa fa-times-circle" data-dismiss="alert"></i></button><i class="icon-remove close" data-dismiss="alert"></i> Update Post Successfully!</div>';
+					$('#staffMSG').html(msg);
 				}
 			});
 		});

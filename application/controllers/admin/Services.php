@@ -108,11 +108,11 @@ class Services extends CI_Controller {
 					$this->message->set('File Upload Successfully!','success',true);
 				}
 			}
-			/*if($_FILES['img']['name']){
-				$config['upload_path']          = base_url($this->config->item('filemanager').'content_image/');
+			if($_FILES['img']['name']){
+				$config['upload_path']          = realpath($this->config->item('filemanager').'content_image')."/";
 				$config['allowed_types']        = 'gif|jpg|png';
-				$config['max_width']            = 800;
-				$config['max_height']           = 800;
+				$config['max_width']            = 365;
+				$config['max_height']           = 594;
 				$config['file_name']            = $_FILES['img']['name'];
 				$config['overwrite']            = true;
 				$this->load->library('upload', $config);
@@ -122,7 +122,7 @@ class Services extends CI_Controller {
 				}else{
 					$this->message->set($this->upload->display_errors(),'danger',true);
 				}
-			}*/
+			}
 			$appliance_id = $this->appliance_m->save_appliance ($this->input->post('app_cat'), $appliance_id);
 			$this->message->set('Update successfully!','success',true);
 			redirect('admin/services/appliances');
@@ -156,11 +156,11 @@ class Services extends CI_Controller {
 					$this->message->set('File Upload Successfully!','success',true);
 				}
 			}
-			/*if($_FILES['img']['name']){
-				echo $config['upload_path']          = base_url($this->config->item('filemanager').'content_image/');
+			if($_FILES['img']['name']){
+				echo $config['upload_path']          = realpath($this->config->item('filemanager').'content_image')."/";
 				$config['allowed_types']        = 'gif|jpg|png';
-				$config['max_width']            = 800;
-				$config['max_height']           = 800;
+				$config['max_width']            = 365;
+				$config['max_height']           = 594;
 				$config['file_name']            = $_FILES['img']['name'];
 				$config['overwrite']            = true;
 				$this->load->library('upload', $config);
@@ -170,7 +170,7 @@ class Services extends CI_Controller {
 				}else{
 					$this->message->set($this->upload->display_errors(),'danger',true);
 				}
-			}*/
+			}
 			$appliance_id = $this->appliance_m->save_appliance ($this->input->post('app_cat'), $appliance_id);
 			$this->message->set('Update successfully!','success',true);
 			redirect('admin/services/appliances');
@@ -196,6 +196,16 @@ class Services extends CI_Controller {
 		$this->load->view ($this->config->item("backend_path") . 'header', $data);
 		$this->load->view ('admin/services/appliance_detail', $data);
 		$this->load->view ($this->config->item("backend_path") . 'footer', $data);		
+	}
+	public function deleteAppliance($apid=false){
+		if($apid){
+			$this->appliance_m->delete_appliance($apid);
+			$this->message->set('Action completed successfully!','success',true);
+		}else{
+			$this->message->set('Action not completed','danger',true);
+		}
+
+		redirect('admin/service/appliances');
 	}
 	public function brand($bid=false,$appid=false){
 		$this->form_validation->set_rules("app_cat","Appliance Category","required");
@@ -274,13 +284,13 @@ class Services extends CI_Controller {
 		}
 	}
 	public function selfRecharge () {
+		$data['id'] = $id = $this->session->userdata('id');
 		$this->form_validation->set_rules("plan","Select Plan","required");
 		if($this->form_validation->run()==true){
 			$this->plan_m->setTechnicianPlan();
 			$this->message->set('Recharge plan success!','success',true);
-			redirect('admin/plan/recharge_plan/'.$id);
+			redirect('admin/services/selfRecharge/');
 		}
-		$data['id'] = $id = $this->session->userdata('id');
 		$data['technician'] = $this->user_m->getUser($id);
 		$data['page_title'] = 'Self Recharge';
 		$this->load->view ($this->config->item('backend_path') . 'header', $data);

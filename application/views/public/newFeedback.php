@@ -14,6 +14,7 @@
                             <div class="row">
                                 <h4><?php echo $page_title;?></h4>
                                 <form class="form-hrizontal" action="<?php echo site_url('public/main/add_feedback');?>" method="post">
+                                    <input type="hidden" name="eid" value="<?php echo $eid;?>" >
                                     <div class="form-group">
                                         <label for="" class="label-control col-md-3 col-sm-4 col-xs-4 text-right">Subject &nbsp;&nbsp;&nbsp;</label>
                                         <div class="col-md-9 col-sm-8 col-xs-8">
@@ -30,6 +31,7 @@
                                     <br clear="all" /><br clear="all" />
                                     <div class="form-actions">
                                         <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <a href="<?php echo site_url('public/main/mybooking');?>" class="btn btn-danger pull-left">Back</a>
                                             <button type="submit" class="btn btn-primary pull-right">Submit</button>
                                         </div>
                                     </div>

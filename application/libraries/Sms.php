@@ -41,7 +41,7 @@ class Sms {
 		}
 	}
 	public function sendOTP($mobile=false,$name=false){
-		if($mobile && $name){
+		if($mobile){
 			$OTP = $this->CI->default_m->genrateUniquiId($mobile.$name.time(),6);
 			$link = $this->url."sendSMS?username=".$this->user."&message=".urlencode($OTP)."&sendername=".$this->sender."&smstype=TRANS&numbers=".$mobile."&apikey=".$this->api;
 			$str = file_get_contents($link);

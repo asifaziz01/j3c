@@ -36,7 +36,7 @@
             </ul>
           </div>
           <div class="col-md-4">
-            <h4>Feedback</h4>
+            <!--<h4>Feedback</h4>
             <form action="<?php echo site_url('main/add_feedback');?>" method="post" class="newsletter">
                 <?php if(!$this->session->userdata('id')){ ?>
                 <div class="form-group">
@@ -58,14 +58,13 @@
                 <div class="form-actions">
                   <button class="btn btn-primary" type="submit">Submit</button>
                 </div>
-              <!-- /input-group -->
-            </form>
+            </form>-->
           </div>
         </div>
         <div class="top_awro pull-right" id="back-to-top"><i class="fa fa-chevron-up" aria-hidden="true"></i> </div>
       </div>
     </div>
-    
+
     <!--Boottom Footer-->
     <div class="container-fluid bottom-footer">
       <div class="container">
@@ -81,17 +80,28 @@
       </div>
     </div>
   </footer>
-  <!--/Footer--> 
-  
+  <!--/Footer-->
 </div>
-<!--/Wrapper End--> 
+<br class="hidden-lg heiiden-md" clear="all" />
+<div class="container text-center hidden-lg hidden-md" style="position:fixed;bottom:0;background-color:#080D22;color:#FFF;width:100%;padding:5px 0 5px 0;font-size:1.6em;">
+  <div class="" style="text-align:center;">
+    <small>Call for Service</small>
+    <br clear="all"/>
+    <a href="tel:+91-8107186985" style="color:#FFF;">
+      +91-8107186985
+    </a>
+  </div>
+</div>
+<!--/Wrapper End-->
 
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> 
-<script src="<?php echo base_url ($this->config->item("template_path").'js/jquery.min.js');?>"></script> 
-<!-- Include all compiled plugins (below), or include individual files as needed --> 
-<script src="<?php echo base_url ($this->config->item("template_path").'js/bootstrap.min.js');?>"></script> 
-<script src="<?php echo base_url ($this->config->item("template_path").'js/owlcarousel/owl.carousel.min.js');?>"></script> 
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins)
+<script src="<?php //echo base_url ($this->config->item("template_path").'js/jquery-3.2.1.min.js');?>"></script> -->
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+
+<script src="<?php echo base_url ($this->config->item("template_path").'js/owlcarousel/owl.carousel.min.js');?>"></script>
 <script src="<?php echo base_url ($this->config->item("template_path").'js/custom.js');?>"></script>
+<script src="<?php echo base_url ($this->config->item("template_path").'js/app.js');?>"></script>
 <script>
   /*(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -101,12 +111,21 @@
   ga('create', 'UA-106074231-1', 'auto');
   ga('send', 'pageview');
 */
-function showConfirm(url,msg){
+  function showConfirm(url,msg){
 	  var conf = confirm(msg);
 	  if(conf){
-		document.location.href = url;  
+		document.location.href = url;
 	  }
   }
+  function openNav() {
+      document.getElementById("mySidenav").style.width = "250px";
+  }
+
+  /* Set the width of the side navigation to 0 */
+  function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+  }
+
 
 </script>
 <?php } ?>

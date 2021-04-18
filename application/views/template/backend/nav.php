@@ -2,7 +2,16 @@
 if(get_cookie('loginIn')){
 	$navigation = $this->settings_m->getMenu(false,false,array('parent'=>'0'));//json_decode($string,true);
 	$role = $this->role_m->getPrivilage($this->session->userdata("status"));
-	$modules = explode(",",$role['module_list']);
+	if($this->session->userdata('status')==STATUS_STAFF){
+		if(!$this->session->userdata('post')){
+			$modules=array();
+		}else{
+			$post = $this->user_m->getStaffPost($this->session->userdata('post'));
+			$modules = ($post['previliges'])?explode(",",$post['previliges']):[];
+		}
+	}else{
+		$modules = explode(",",$role['module_list']);
+	}
 	?>
 	<ul id="nav">
 		<?php

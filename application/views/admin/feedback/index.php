@@ -27,8 +27,11 @@
 							<td><?php echo $fb['name'];?></td>
 							<td><?php echo $fb['email'];?></td>
 							<td><?php echo $fb['mobile'];?></td>
-							<td><?php echo date('d M Y H:i:s',strtitime($fb['date']));?></td>
+							<td><?php echo date('d M Y H:i:s',strtotime($fb['date']));?></td>
 							<td>
+								<?php if(!$fb['status']){?>
+								<a id="lnk<?php echo $fb['id'];?>" href="javascript:void(0);" onclick="verify('<?php echo $fb['id'];?>');" class="btn btn-success btn-xs">Verify</a>
+								<?php }?>
 							</td>
 						</tr>
 						<?php
@@ -41,10 +44,13 @@
 	</div>
 </div>
 <script>
-function dispatchNow(e){
-	var conf = window.confirm("Are you sure this item is dispatched.");
-		if(conf){
-			document.location.href='<?php echo site_url('admin/user/dispatchNow');?>/'+e.value;
+function verify(id){
+	$.get('<?php echo site_url('admin/user/feedbackVerify/');?>'+id,function(data,status,xhr){
+		if(status=='success'){
+			if(data){
+				$('#lnk'+id).css('display','none');
+			}
 		}
+	})
 }
 </script>

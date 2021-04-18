@@ -57,6 +57,49 @@ class Main extends CI_Controller {
         $this->load->view ('public/issueForm', $data);
         $this->load->view ($this->config->item("template_path") . 'footer', $data);
 	}
+	public function issuesList($apid=false){
+		if($apid){
+			if(!empty($_COOKIE['just3click_cart'])){
+				$orders = $_COOKIE['just3clickItems'];
+				$orders = explode(',',$orders);
+				$totalprice=0;$totaloffer=0;$price='';
+				echo '<table class="table">
+				<thead><th>Appliance</th><th>Issue</th><th></th></thead>
+				<tbody>';
+				if($orders){
+					foreach($orders as $order){
+						$items = explode('-',$order);
+						if($items[0]==$apid){
+							$appliance = $this->appliance_m->get_appliance($items[0]);
+							$brand = $this->appliance_m->get_brands(false,$items[1]);
+							$type = $this->appliance_m->get_appliance_types(false,$items[2]);
+							$issue = $this->appliance_m->get_issues(false,$items[3]);
+							echo '<tr>';
+							echo '<td data-label="Appliance">'.$appliance['appliance_name'].'</td>';
+							echo '<td data-label="Issue">'.$issue['issue_title'].'</td>';
+							echo '<td><a href="javascript:void(0);" onclick="deleteCartItem(\''.$order.'\')" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a></td>';
+							echo '</tr>';
+							$price .= (($issue['offer_price'])?$issue['offer_price']:$issue['price']).',';
+							$totalprice +=(($issue['offer_price'])?$issue['offer_price']:$issue['price']);
+							$totaloffer +=$issue['offer_price'];
+						}
+					}
+					$price = substr($price,0,-1);
+					echo '<input type="hidden" name="items_price" value="'.$price.'" />';
+					echo '<tr><td colspan="2" align="right">Charge : Rs. '.$totalprice.'</td><td></td></tr>';
+				}
+				echo '</tbody></table>';
+			}
+		}
+	}
+	public function issueInfo($id=false){
+		if($id){
+			$issue = $this->appliance_m->get_issues(false,$id);
+			if($issue){
+				echo '<span style="color:red;">*</span> <small>'.$issue['description'].'</small>';
+			}
+		}
+	}
 	public function enquiryBox(){
         $data['page_title'] = 'Enquiry';
 		$data['no_banner']=true;
@@ -67,6 +110,7 @@ class Main extends CI_Controller {
 	public function finalCheckout(){
         $data['page_title'] = 'Final Checkout';
 		$data['no_banner']=true;
+		$res = $this->sms->sendOTP($this->session->userdata('login'),$this->session->userdata('name'));
 		$this->load->view ($this->config->item("template_path") . 'header', $data);
         $this->load->view ('public/finalCheckout', $data);
         $this->load->view ($this->config->item("template_path") . 'footer', $data);
@@ -194,7 +238,10 @@ class Main extends CI_Controller {
             $this->message->set("Successfully signed in.","success", true);
 			$this->session->set_userdata("group_id",$user['status']);
             redirect('public/main/myBooking/');
-        }
+        }else{
+			$this->message->set(((validation_errors())?validation_errors():"Please try again!"),"danger", true);
+            redirect('public/main/finalCheckout');
+		}
         //$this->load->view (INCLUDE_PATH . 'header', $data);
         //$this->load->view ('public/services/enquiryConfirm', $data);
         //$this->load->view (INCLUDE_PATH . 'footer', $data);
@@ -204,13 +251,14 @@ class Main extends CI_Controller {
         $this->load->view (INCLUDE_PATH . 'footer', $data);*/
 	}
 	public function reviews(){
-        $data['page_title'] = 'Feedback';
+        $data['page_title'] = 'Review';
 		$data['feedback'] = $this->main_m->getFeedback(false,array('mobile'=>$this->session->userdata('login')));
 		$this->load->view ($this->config->item("template_path") . 'header', $data);
         $this->load->view ('public/reviews', $data);
         $this->load->view ($this->config->item("template_path") . 'footer', $data);
 	}
-	public function add_feedback(){
+	public function add_feedback($eid=false){
+		$data['eid'] = $eid;
 		if(!$this->session->userdata('id')){
 			$this->form_validation->set_rules('cname', 'Name', 'required');
 			$this->form_validation->set_rules('mobile', 'Mobile', 'required|numeric');
@@ -223,7 +271,7 @@ class Main extends CI_Controller {
 			$this->main_m->addFeedback();
 			redirect("public/main/reviews");
 		}
-		$data['page_title']="Feedback";
+		$data['page_title']="Review";
 		$this->load->view($this->config->item('template_path') . 'header', $data);
 		$this->load->view('public/newFeedback');
 		$this->load->view($this->config->item('template_path') . 'footer', $data);
@@ -234,5 +282,104 @@ class Main extends CI_Controller {
 			$this->message->set("feedback delete successfully!","success",true);
 		}
 		redirect('public/main/reviews');
+	}
+	public function getRank($eid=false){
+		if($eid){
+			$enquiry = $this->enquiry_m->get_enquiries($eid);
+			echo '<form method="post" id="rnkfrm">';
+				echo '<div class="form-group">
+					<label class="label-control col-md-4 col-sm-12 col-xs-12">Rank</label>
+					<div class="col-md-8 col-sm-12 col-xs-12">
+						<select name="rank" class="form-control" onchange="saveRank(this.value,'.$enquiry['technician_id'].')">
+							<option value="1">1 Star</option>
+							<option value="2">2 Star</option>
+							<option value="3">3 Star</option>
+							<option value="4">4 Star</option>
+							<option value="5" selected>5 Star</option>
+						</select>
+					</div>
+					<br clear="all" />
+					</div>';
+			echo '</form>';
+		}
+	}
+	public function saveRank($rank=false,$tid=false){
+		if($rank && $tid){
+			$res = $this->main_m->saveRank($rank,$tid);
+			if($res){
+				echo 1;
+			}else{
+				false;
+			}
+		}
+	}
+	//==== add Profile pic ========
+	public function addProfilePic($uid=false,$img=false,$folder=false){
+		//===== image uploading code ======
+		$img = ($img)?$img:$_POST['profile_pic'];
+		if($img){
+			$img = str_replace("[removed]","", $img);
+			$img = str_replace(' ', '+', $img);
+
+			$user = $this->user_m->getUser($uid);
+			$folderName = ($folder)?$folder:'profile_pic';
+			$imgpath = realpath($this->config->item('filemanager').$folderName)."/";
+			$imgname = 'user_'.$user['id'] . '.png';
+
+			$source = fopen($img, 'r');
+			$destination = fopen($imgpath.$imgname, 'w');
+			
+			if(stream_copy_to_stream($source, $destination)){
+				$imgdata = array("uid"=>$uid,"filename"=>$imgname,"type"=>"image/png");
+				$this->user_m->addProfilePic($uid,$imgdata);
+				$this->message->set("Action Completed Successfully!","success", true);
+			}else{
+				$this->message->set("Image not upload!","danger", true);
+			}
+			
+			fclose($source);
+			fclose($destination);
+
+			/*$img = str_replace('data:image/png;base64,', '', $img);
+			$data = base64_decode($img);
+			$imgname = $user['ABO'] . '.png';
+			$file = $imgpath . $imgname;
+			$success = file_put_contents($file, $data);*/
+		}else{
+			$this->message->set("Please Select an Image for profile picture!","danger", true);
+		}
+	}
+	public function editProfile(){
+		$id = $this->session->userdata('id');
+		$this->form_validation->set_rules("uname","Name","required");
+		$this->form_validation->set_rules("gender","Gender","required");
+		$this->form_validation->set_rules("address","Address","required");
+		if($this->form_validation->run()==true){
+			$this->user_m->create_user($id);
+			if($_POST['profile_pic'] && $id){
+				$this->addProfilePic($id,$_POST['profile_pic']);
+			}
+			$this->message->set("Profile Updation successfull!","success",true);
+			redirect("public/main/userProfile");
+		}
+		$data['page_title'] = 'Update Profile';
+		$data['me'] = $this->user_m->getUser($this->session->userdata('id'));
+		$this->load->view ($this->config->item("template_path") . 'header', $data);
+		$this->load->view ('public/editProfile', $data);
+		$this->load->view ($this->config->item("template_path") . 'footer', $data);
+	}
+	public function userProfile(){
+		$data['page_title'] = 'Profile';
+		$data['me'] = $this->user_m->getUser($this->session->userdata('id'));
+		$this->load->view ($this->config->item("template_path") . 'header', $data);
+		$this->load->view ('public/userProfile', $data);
+		$this->load->view ($this->config->item("template_path") . 'footer', $data);
+	}
+	public function changePassword(){
+		$data['page_title'] = 'Change Password';
+		$data['me'] = $this->user_m->getUser($this->session->userdata('id'));
+		$this->load->view ($this->config->item("template_path") . 'header', $data);
+		$this->load->view ('public/changePassword', $data);
+		$this->load->view ($this->config->item("template_path") . 'footer', $data);
 	}
 }

@@ -1,26 +1,22 @@
   <!--Our services Section Satrt-->
   <section id="services">
-    <div class="container text-center" style="padding-left:0px">
+    <div class="container text-center" style="padding-left:5px;padding-right:5px;">
       <h1 class="panel-heading">Our services</h1>
-      <ul style="list-style:none;padding-left:0px;">
         <?php
         $categories = $this->appliance_m->get_categories();
         if($categories){
+          echo '<ul class="services-list" style="text-align:center;">';
           foreach($categories as $cat){
-            echo '<li style="padding-left:25px;"><h3 style="text-align:left;">'.$cat['title'].'</h3>';
             $appliances = $this->appliance_m->get_appliances($cat['id']);
             if($appliances){
-              echo '<ul class="services-list">';
               foreach($appliances as $appliance){
                 echo '<li><a href="'.site_url('main/issueForm/'.$cat['id'].'/'.$appliance['appliance_id']).'"><img src="'.base_url ($this->config->item("template_path").'images/'.$appliance['icon']).'" alt="'.$appliance['appliance_name'].'" /><br />'.$appliance['appliance_name'].'</a></li>';
               }
-              echo '</ul>';
             }
-            echo '</li>';
           }
+          echo '</ul>';
         }
         ?>
-      </ul>
     </div>
   </section>
   <!--Our services Section End--> 
@@ -220,15 +216,15 @@
       <div class="row">
         <div class="col-md-12">
           <?php 
-          $feedback = $this->main_m->getFeedback();
+          $feedback = $this->main_m->getFeedback(false,array('status'=>1));
           ?>
-          <div id="carousel-example-generic" class="carousel slide" data-ride="carousel "> <!-- Indicators -->
+          <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel"> <!-- Indicators -->
             <?php if($feedback){ ?>
             <ol class="carousel-indicators">
               <?php
               $sr=0;
               foreach($feedback as $fb){?>
-              <li data-target="#carousel-example-generic" data-slide-to="<?php echo $sr++;?>" class="<?php echo ($sr==0)?'active':'';?>"></li>
+              <li data-target="#carouselExampleIndicators" data-slide-to="<?php echo $sr++;?>" class="<?php echo ($sr==0)?'active':'';?>"></li>
               <?php } ?>
             </ol>
             <!-- Wrapper for slides -->
@@ -236,7 +232,7 @@
               <?php
               $sr=0;
               foreach($feedback as $fb){?>
-              <div class="item <?php echo ($sr==0)?'active':'';?>">
+              <div class="carousel-item <?php echo ($sr==0)?'active':'';?>">
                 <div class="avatar"><img class="img-circle" src="<?php echo base_url ($this->config->item("template_path").'images/clinte1.png');?>"   alt="Client 1"/></div>
                 <h3><?php echo $fb['name'];?></h3>
                 <strong><?php echo $fb['email'];?></strong>
@@ -247,7 +243,15 @@
             <?php
             }
             ?>
-            <!-- Controls --> <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev"> <span class="fa fa-angle-left"></span> </a> <a class="right carousel-control" href="#carousel-example-generic" data-slide="next"> <span class="fa fa-angle-right"></span> </a> </div>
+            <!-- Controls --> 
+            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
         </div>
       </div>
     </div>
@@ -380,7 +384,6 @@ function getAppliance(val){
 			}
 			if(statusTxt == "error"){
 				$('#loader').css("display","none");
-				alert('Something wrong in file Loading. Please contact your service provider.');
 			}
 		});
 	}else{
@@ -392,7 +395,7 @@ function createOptions(val){
   cat = $('select[name=service_category]').val();
   val = $('select[name=service_appliance]').val();
   if(!val){
-    alert('Please select Appliance from appliance list.')
+    //alert('Please select Appliance from appliance list.')
   }else{
     document.location.href='<?php echo site_url('main/issueForm');?>/'+cat+'/'+val
   }

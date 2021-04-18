@@ -2,25 +2,21 @@
   <section id="services">
     <div class="container text-center" style="padding-left:0px">
       <h1 class="panel-heading">Our services</h1>
-      <ul style="list-style:none;padding-left:0px;">
-        <?php
+      <?php
         $categories = $this->appliance_m->get_categories();
         if($categories){
+          echo '<ul class="services-list" style="text-align:left;">';
           foreach($categories as $cat){
-            echo '<li style="padding-left:25px;"><h3 style="text-align:left;">'.$cat['title'].'</h3>';
             $appliances = $this->appliance_m->get_appliances($cat['id']);
             if($appliances){
-              echo '<ul class="services-list">';
               foreach($appliances as $appliance){
                 echo '<li><a href="'.site_url('public/main/issueForm/'.$cat['id'].'/'.$appliance['appliance_id']).'"><img src="'.base_url ($this->config->item("template_path").'images/'.$appliance['icon']).'" alt="'.$appliance['appliance_name'].'" /><br />'.$appliance['appliance_name'].'</a></li>';
               }
-              echo '</ul>';
             }
-            echo '</li>';
           }
+          echo '</ul>';
         }
         ?>
-      </ul>
     </div>
   </section>
   <!--Our services Section End--> 
@@ -220,7 +216,7 @@
       <div class="row">
         <div class="col-md-12">
           <?php 
-          $feedback = $this->main_m->getFeedback();
+          $feedback = $this->main_m->getFeedback(false,array('status'=>1));
           ?>
           <div id="carousel-example-generic" class="carousel slide" data-ride="carousel "> <!-- Indicators -->
             <?php if($feedback){ ?>

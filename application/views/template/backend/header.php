@@ -243,32 +243,32 @@
 			<!-- /Sidebar Toggler -->
 			<!-- Top Right Menu -->
 			<ul class="nav navbar-nav navbar-right">
-				<?php 
-				if($this->session->userdata('status')==STATUS_TECHNICIAN){
-				$enquiries = $this->enquiry_m->get_enquiries(false,array('status'=>0));
+			<?php 
+			if($this->session->userdata('status')==STATUS_TECHNICIAN){
+				$newenquirie = $this->enquiry_m->get_enquiries(false,array('status'=>0));
 				$tech_locations = $this->default_m->getTechnicianLocations($this->session->userdata('id'));
 				$tech_appliance = $this->default_m->getTechnicianAppliances($this->session->userdata('id'));
 				$notif_num=0;
-				if($enquiries){
-					foreach($enquiries as $enc){
-					$strt=1;$temp_itms=array();
-					if(($tech_appliance) && (in_array($enc['location'],$tech_locations))){
-						//if(!$enc['status'] || ($enc['status'] && $enc['technician_id']==$this->session->userdata['id']))
-						//{
-					
-						$items = explode(",",$enc["items"]);
-						foreach($items as $item){
-							$item = explode("-",$item);
-							$temp_itms[]=$item[0];
-						}
-						$diffaplnc = array_diff_assoc($temp_itms, $tech_appliance);
-						
-						if(count($diffaplnc)==0){
+				if($newenquirie){
+					foreach($newenquirie as $enc){
+						$strt=1;$temp_itms=array();
+						if(($tech_appliance) && (in_array($enc['location'],$tech_locations))){
+							//if(!$enc['status'] || ($enc['status'] && $enc['technician_id']==$this->session->userdata['id']))
+							//{
+							/*$items = explode(",",$enc["items"]);
+							foreach($items as $item){
+								$item = explode("-",$item);
+								$temp_itms[]=$item[0];
+							}
+							$diffaplnc = array_diff_assoc($temp_itms, $tech_appliance);
+							
+							if(count($diffaplnc)==0){
+								$notif_num +=1;
+							}*/
 							$notif_num +=1;
 						}
-						}
 					}
-					}
+				}
 				?>
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -280,21 +280,22 @@
 							<p>You have <?php echo ($notif_num)?($notif_num):0; ?> new Notifications</p>
 						</li>
 						<?php
-						if($enquiries){
-							foreach($enquiries as $enc){
+
+						if($newenquirie){
+							foreach($newenquirie as $enc){
 							$strt=1;$temp_itms=array();
 							if(($tech_appliance) && (in_array($enc['location'],$tech_locations))){
 								//if(!$enc['status'] || ($enc['status'] && $enc['technician_id']==$this->session->userdata['id']))
 								//{
 							
-								$items = explode(",",$enc["items"]);
+								/*$items = explode(",",$enc["items"]);
 								foreach($items as $item){
 									$item = explode("-",$item);
 									$temp_itms[]=$item[0];
 								}
 								$diffaplnc = array_diff_assoc($temp_itms, $tech_appliance);
 								
-								if(count($diffaplnc)==0){
+								if(count($diffaplnc)==0){*/
 									echo '<li>
 										<a href="'.site_url('admin/enquiries/index').'">
 											<span class="subject">
@@ -303,14 +304,14 @@
 											</span>
 										</a>
 									</li>';
-								}
+								//}
 							  }
 						  }
 						}
 						?>
 					</ul>
 				</li>
-				<?php } ?>
+			<?php } ?>
 				<!-- User Login Dropdown -->
 				<li class="dropdown user">
 					<?php $userProf = $this->user_m->getUser($this->session->userdata('id'));?>
@@ -333,7 +334,6 @@
 		</div>
 		<!-- /top navigation bar -->
 	</header> <!-- /.header -->
-
 	<div id="container">
 		<div id="sidebar" class="sidebar-fixed">
 			<div id="sidebar-content">

@@ -24,10 +24,9 @@ class Enquiries extends CI_Controller {
 	
 	public function index () {
 		$data['enquiries'] = $this->enquiry_m->get_enquiries();
-
 		$data['page_title'] = 'List of Enquiries';
 
-        $this->load->view ($this->config->item('backend_path') . 'header', $data);
+		$this->load->view ($this->config->item('backend_path') . 'header', $data);
 		if($this->session->userdata('status')==STATUS_CUSTOMER){
 			$this->load->view ('admin/enquiries/index', $data);
 		}else{
@@ -96,17 +95,92 @@ class Enquiries extends CI_Controller {
 		$this->load->view ('admin/enquiries/jobClose', $data);
 		$this->load->view ($this->config->item('backend_path') . 'footer', $data);		
 	}
+	public function jobDiliver ($eid=false) {
+		$this->form_validation->set_rules("otp","OTP","required");
+		if($this->form_validation->run()==true){
+			$enquiry = $this->enquiry_m->get_enquiries($eid);
+			if($enquiry['job_otp']==$this->input->post('otp')){
+				$this->enquiry_m->jobClose();
+				$this->message->set("Job close successfully!","success",true);
+				redirect("admin/enquiries/index");
+			}else{
+				$this->message->set("OTP Not Match! Please try again.","danger",true);
+				redirect("admin/enquiries/jobDiliver/".$eid);
+			}
+		}
+		$data['page_title'] = 'OTP Confirmation for Job diliver';
+		$data['eid']=$eid;
+		$data['enquiry'] = $enquiry = $this->enquiry_m->get_enquiries($eid);
+		$OTP = $this->default_m->genrateUniquiId(time().$enquiry['mobile'],6);
+		$values = array("job_otp"=>$OTP);
+		$this->enquiry_m->servicePick($values,array('id'=>$eid));
+		$msg='Appliance dilivery OTP is '.$OTP.','.PHP_EOL.'keep these OTP safe & show your technician after service completion';
+		$sms = $this->sms->send($enquiry['mobile'],$msg);
+
+		$this->load->view ($this->config->item('backend_path') . 'header', $data);
+		$this->load->view ('admin/enquiries/jobDiliver', $data);
+		$this->load->view ($this->config->item('backend_path') . 'footer', $data);		
+	}
+	public function appRecieve ($eid=false) {
+		$this->form_validation->set_rules("otp","OTP","required");
+		$this->form_validation->set_rules("appDetail","Appliance Detail","required|trim");
+		if($this->form_validation->run()==true){
+			$enquiry = $this->enquiry_m->get_enquiries($eid);
+			if($enquiry['recieve_otp']==$this->input->post('otp')){
+				$values = array("recieved"=>1,"recieve_detail"=>$this->input->post('appDetail'),"recieve_app_image"=>(($_FILES['appImage']['name'])?str_replace(" ","_",$_FILES['appImage']['name']):''));
+				$res = $this->enquiry_m->servicePick($values,array('id'=>$eid));
+				if($res){
+					if($_FILES['appImage']['name']){
+						$config['upload_path']          = realpath($this->config->item('filemanager').'/content_image').'/';
+						$config['allowed_types']        = 'gif|jpg|png';
+						//$config['max_size']             = 150;
+						$config['width']            	= 500;
+						$config['file_name']            = $_FILES['appImage']['name'];
+						$config['overwrite']            = true;
+						$this->load->library('upload', $config);
+						if ( ! $this->upload->do_upload('appImage'))
+						{
+							$this->message->set($this->upload->display_errors(),'danger',true);
+						}else{
+							$this->message->set('File Upload Successfully!','success',true);
+						}
+					}
+				}
+				$this->message->set("Job Recieved successfully!","success",true);
+				redirect("admin/enquiries/index");
+			}else{
+				$this->message->set("OTP Not match! Please try again.","danger",true);
+				redirect("admin/enquiries/appRecieve/".$eid);
+			}
+		}
+		$data['page_title'] = 'Recieve Appliance from Customer';
+		$data['eid']=$eid;
+		$data['enquiry'] = $enquiry = $this->enquiry_m->get_enquiries($eid);
+		$OTP = $this->default_m->genrateUniquiId(time().$enquiry['mobile'],6);
+		$values = array("recieve_otp"=>$OTP);
+		$this->enquiry_m->servicePick($values,array('id'=>$eid));
+		$msg='Appliance recieve OTP is '.$OTP.','.PHP_EOL.'keep these OTP safe.';
+		$sms = $this->sms->send($enquiry['mobile'],$msg);
+		$this->load->view ($this->config->item('backend_path') . 'header', $data);
+		$this->load->view ('admin/enquiries/appRecieve', $data);
+		$this->load->view ($this->config->item('backend_path') . 'footer', $data);		
+	}
 	public function servicePick ($sid=false) {
 		if($sid){
 			$enquiry = $this->enquiry_m->get_enquiries($sid,array('status'=>0));
 			$tech_appliance = $this->enquiry_m->getTechnicianAppliances($this->session->userdata('id'));
+			$tech_plan = $this->enquiry_m->get_technician_plan(false,$this->session->userdata('id'));
 			if($enquiry && in_array($enquiry['appliance_id'],$tech_appliance)){
 				$technician = $this->user_m->getUser($this->session->userdata('id'));
-				$OTP = $this->default_m->genrateUniquiId(time().$enquiry['mobile'],6);
+				$OTP = ($tech_plan[count($tech_plan)-1]['plan_type']==1)?$this->default_m->genrateUniquiId(time().$enquiry['mobile'],6):'';
 				$values = array('technician_id'=>$this->session->userdata('id'),'pick_date'=>time(),"job_otp"=>$OTP,'status'=>1);
 				$res = $this->enquiry_m->servicePick($values,array('id'=>$sid));
 				if($res){
-					$msg='Your OTP is '.$OTP.','.PHP_EOL.'keep these OTP safe until contact with the service provider'.PHP_EOL.' or cal to '.$technician['primary_contact'];
+					if($tech_plan[count($tech_plan)-1]['plan_type']==2){
+						$msg='Your job picked by '.$technician['name'].PHP_EOL.', cal at '.$technician['phone'];
+					}else{
+						$msg='Your OTP is '.$OTP.','.PHP_EOL.'keep these OTP safe until contact with the service provider'.PHP_EOL.' or cal to '.$technician['phone'];
+					}
 					$sms = $this->sms->send($enquiry['mobile'],$msg);
 					$this->message->set("Action completed successfully! please contact to customer and get service OTP by customer within 24 hour till your service is blocked by system. You will not able to pick other customer service.","success",true);
 				}

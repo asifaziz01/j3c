@@ -145,6 +145,7 @@ class Enquiry_m extends CI_Model {
 			"work_hour"=>$calculateHour,
 			"close_date"=>time(),
 			"status"=>2,
+			"recieve_otp"=>'',
 			"job_otp"=>''
 		);
 		$res = $this->db->where("id",$this->input->post("eid"))->update("customer_enquiries",$values);

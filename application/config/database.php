@@ -75,10 +75,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'wwebtech.com',
-	'username' => 'wwebtech_asif',
-	'password' => 'asifaziz123./.',
-	'database' => 'wwebtech_just3click2',
+	'hostname' => 'localhost',
+	'username' => 'wwebtech_admin',
+	'password' => 'wwebtech123./.',
+	'database' => 'wwebtech_just3click',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => 'j3c_',
 	'pconnect' => FALSE,

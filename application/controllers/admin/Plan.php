@@ -8,6 +8,7 @@ class Plan extends CI_Controller {
 		parent::__construct();
 		$this->load->model('user_m');
 		$this->load->model("plan_m");
+		$this->load->model("enquiry_m");
 		if(!$this->session->userdata("login")){
 			delete_cookie("loginIn");
 			redirect('main');
@@ -35,7 +36,7 @@ class Plan extends CI_Controller {
 		$this->form_validation->set_rules("amount","Plan Amount","required|numeric");
 		$this->form_validation->set_rules("hour","Plan Hour","required|numeric");
 		if($this->form_validation->run()==true){
-			$this->plan_model->create_plan();
+			$this->plan_m->create_plan();
 			redirect('admin/plan/index');
 		}
 		$data['page_title'] = 'Create Plan';
@@ -49,7 +50,7 @@ class Plan extends CI_Controller {
 		$this->form_validation->set_rules("amount","Plan Amount","required|numeric");
 		$this->form_validation->set_rules("hour","Plan Hour","required|numeric");
 		if($this->form_validation->run()==true){
-			$this->plan_model->create_plan($id);
+			$this->plan_m->create_plan($id);
 			redirect('admin/plan/index');
 		}
 
@@ -74,5 +75,12 @@ class Plan extends CI_Controller {
 		$this->load->view ('admin/plan/recharge_plan', $data);
 		$this->load->view ($this->config->item('backend_path') . 'footer', $data);		
 	    
+	}
+	public function planDetail($pid=false){
+		$plan = $this->plan_m->get_plan($pid);
+		if($plan){
+			echo '<p><strong>Amount</strong> : Rs. '.$plan['amount'].'</p>';
+			echo '<p><strong>Plan Value</strong> : '.(($plan['type']==1)?$plan['hour'].' Points':$plan['hour'].' Jobs').'</p>';
+		}
 	}
 }

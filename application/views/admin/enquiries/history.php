@@ -36,24 +36,21 @@
                                         $brand = $this->appliance_m->get_brands($enc['appliance_id'],$item[1]);
                                         $type = $this->appliance_m->get_appliance_types($enc['appliance_id'],$item[2]);
                                         echo '<tr>';
-                                        if($strt==1){
                                         ?>
-                                        <td rowspan="<?php echo count($items);?>"><?php echo $sr++;?></td>
-                                        <td rowspan="<?php echo count($items);?>"><?php echo date('d M Y H:i:s',$enc['enquiry_date']);?></td>
-                                        <td rowspan="<?php echo count($items);?>"><?php echo $enc['customer_name'];?></td>
+                                        <td><?php echo $sr++;?></td>
+                                        <td><?php echo date('d M Y H:i:s',$enc['enquiry_date']);?></td>
+                                        <td></td>
+                                        <td><?php echo $enc['customer_name'];?></td>
                                         <!--<td rowspan="<?php echo count($items);?>"><?php echo ($enc['status'])?(($enc['technician_id']==$this->session->userdata['id'])?$enc['mobile']:'---'):'<small class="text text-primary">After Accept</small>';?></td>
                                         <td rowspan="<?php echo count($items);?>"><?php echo $enc['address'];?></td>-->
-                                        <?php
-                                        }
-                                        ?>
-                                        <td><?php echo $appliance['appliance_name'];?>
+                                        <td><?php echo $appliance['appliance_name'];?></td>
                                         <!--<td><?php echo $brand['brand_name'];?></td>
                                         <td><?php echo $type['type_name'];?></td>-->
                                         <td><?php echo $issue['issue_title'];?></td>
                                         <?php
                                         if($strt==1){                                
                                         ?>
-                                        <td rowspan="<?php echo count($items);?>">
+                                        <td rowspan="7">
                                             <a href="<?php echo site_url("admin/enquiries/details/".$enc['id']);?>" class="btn btn-primary btn-xs" title="Details"><i class="icon-list"></i></a>
                                         </td>
                                         <?php

@@ -48,10 +48,70 @@
                             $appliance = $this->appliance_m->get_appliance($apl);
                             ?>
                             <div class="form-group col-md-6 col-sm-6 col-xs-12">
-                              <div class="input-group">
-                                <div class="input-group-addon" onclick="issuesList('<?php echo $appliance['appliance_id'];?>');" data-toggle="modal" data-target="#deleteEnquiryForm"> <i class="fa fa-minus" aria-hidden="true" id="minus_bed"></i></div>
-                                <input type="text" class="form-control" onclick="alert(this.value)" value="<?php echo $appliance['appliance_name'].' ('.$key.')';?>" readonly />
-                                <div class="input-group-addon" onclick="createOptions('<?php echo $appliance['appliance_id'];?>');" data-toggle="modal" data-target="#enquiryForm"><i class="fa fa-plus" aria-hidden="true" id="add_bed"></i></div>
+                              <div class="input-group" style="box-shadow: 10px 10px 5px grey;">
+                                <div class="input-group-addon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-chevron-down" style="margin-left:15px;margin-top:15px;" aria-hidden="true"></i>
+                                  </div>
+                                  <!--<div class="input-group-addon" onclick="issuesList('<?php echo $appliance['appliance_id'];?>');" data-toggle="modal" data-target="#deleteEnquiryForm"> <i class="fa fa-minus" aria-hidden="true" id="minus_bed"></i></div>-->
+                                  <input type="text" class="form-control" value="<?php echo $appliance['appliance_name'].' ('.$key.')';?>" readonly style="background-color:#FFF;color:#E78200;" />
+                                  <!--<div class="input-group-addon" onclick="createOptions('<?php echo $appliance['appliance_id'];?>');" data-toggle="modal" data-target="#enquiryForm"><i class="fa fa-chevron-down" aria-hidden="true" id="add_bed"></i></div>-->
+                                  <div class="dropdown-menu">
+                                    <table class="table table-bordered table-striped table-condensed table-responsive">
+                                    <thead>
+                                      <th>#</th>
+                                      <th>Brand</th>
+                                      <th>Type</th>
+                                      <th>issue</th>
+                                      <th>Charge</th>
+                                      <th></th>
+                                    </thead>
+                                    <tbody>
+                                      <?php
+                                      if($appliance){
+                                        $apid = $appliance['appliance_id'];
+                                        if(!empty($_COOKIE['just3click_cart'])){
+                                          $orders = $_COOKIE['just3clickItems'];
+                                          $orders = explode(',',$orders);
+                                          $totalprice=0;$totaloffer=0;$price='';
+                                          if($orders){
+                                            foreach($orders as $order){
+                                              $sr=1;
+                                              $items = explode('-',$order);
+                                              if($items[0]==$apid){
+                                                $brand = $this->appliance_m->get_brands(false,$items[1]);
+                                                $type = $this->appliance_m->get_appliance_types(false,$items[2]);
+                                                $issue = $this->appliance_m->get_issues(false,$items[3]);
+
+                                                $price .= (($issue['offer_price'])?$issue['offer_price']:$issue['price']).',';
+                                                $totalprice +=(($issue['offer_price'])?$issue['offer_price']:$issue['price']);
+                                                $totaloffer +=$issue['offer_price'];
+                                                echo '<tr>';
+                                                echo '<td>'.($sr++).'</td>';
+                                                echo '<td>'.$brand['brand_name'].'</td>';
+                                                echo '<td>'.$type['type_name'].'</td>';
+                                                echo '<td>'.$issue['issue_title'].'</td>';
+                                                echo '<td>'.(($issue['offer_price'])?$issue['offer_price']:$issue['price']).'</td>';
+                                                echo '<td><a href="javascript:void(0);" onclick="deleteCartItem(\''.$order.'\')" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></a></td>';
+                                                echo '</tr>';
+                                              }
+                                            }
+                                            $price = substr($price,0,-1);
+                                            echo '<input type="hidden" name="items_price" value="'.$price.'" />';
+                                            echo '<tr><td colspan="6" align="right">Charge : Rs. '.$totalprice.'</td></tr>';
+                                          }
+                                        }
+                                      }
+                                      ?>
+                                    </tbody>
+                                    <tfoot>
+                                      <tr>
+                                        <td colspan="6">
+                                          <button type="button" class="btn btn-sm btn-success pull-right" onclick="createOptions('<?php echo $appliance['appliance_id'];?>');" data-toggle="modal" data-target="#enquiryForm"><i class="fa fa-plus"></i> Add Issue</button>
+                                        </td>
+                                      </tr>
+                                    </tfoot>
+                                  </table>
+                                </div>
                               </div>
                             </div>
                             <?php
@@ -61,6 +121,11 @@
                         echo '<p>You have not chosen any option.</p>';
                       }
                     ?>
+                    <style>
+                    .dropdown-menu{
+                      width:100%;
+                    }
+                    </style>
                     <!--<div class="form-group col-md-6 col-sm-6 col-xs-12 padding-r">
                       <div class="input-group">
                         <div class="input-group-addon"><i class="fa fa-minus" aria-hidden="true" id="minus_bath"></i> </div>
@@ -76,25 +141,21 @@
                     <p>Adds extra issues.</p>
                     <div class="form-group col-md-12 padding-r">
                       <input type="hidden"  name="select_extra"/>
-                      <ul style="list-style:none;">
-                        <?php
+                      <?php
                         $categories = $this->appliance_m->get_categories();
                         if($categories){
+                          echo '<ul class="services-list">';
                           foreach($categories as $cat){
-                            echo '<li style="text-align:center;"><h3 style="text-align:left;">'.$cat['title'].'</h3>';
                             $appliances = $this->appliance_m->get_appliances($cat['id']);
                             if($appliances){
-                              echo '<ul class="services-list">';
                               foreach($appliances as $appliance){
-                                echo '<li><a href="'.site_url('public/main/issueForm/'.$cat['id'].'/'.$appliance['appliance_id']).'"><img src="'.base_url ($this->config->item("template_path").'images/'.$appliance['icon']).'" alt="'.$appliance['appliance_name'].'" /><br />'.$appliance['appliance_name'].'</a></li>';
+                                echo '<li style="margin:5px 5px 5px 5px;"><a href="'.site_url('public/main/issueForm/'.$cat['id'].'/'.$appliance['appliance_id']).'"><img src="'.base_url ($this->config->item("template_path").'images/'.$appliance['icon']).'" alt="'.$appliance['appliance_name'].'" /><br />'.$appliance['appliance_name'].'</a></li>';
                               }
-                              echo '</ul>';
                             }
-                            echo '</li>';
                           }
+                          echo '</ul>';
                         }
                         ?>
-                      </ul>
                     </div>
                     <div class="clearfix"></div>
                     <hr />
@@ -381,12 +442,12 @@ function deleteCartItem(cookie_name){
 
 function issuesList(val){
   $('#loader').css("display","block");
-  $("#issueList").load('<?php echo site_url('public/main/issuesList');?>/'+val, function(responseTxt, statusTxt, xhr){
+  $.get('<?php echo site_url('public/main/issuesList');?>/'+val, function(responseTxt, statusTxt, xhr){
     if(statusTxt == "success"){
       if(!responseTxt){
         alert('No data available.');
       }else{
-        $("#type").html(responseTxt);
+        $("#issueList").html(responseTxt);
       }
     }
     if(statusTxt == "error"){

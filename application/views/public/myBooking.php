@@ -13,7 +13,7 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <h4><?php echo $page_title;?></h4>
-                                <table class="dataTable responsiveTable">
+                                <table class="responsive">
                                     <thead>
                                         <tr>
                                         <th>#</th>
@@ -48,7 +48,7 @@
                                                         $tmp = $this->appliance_m->get_issues($enc['appliance_id'],$item[3]);
                                                         $brand = $this->appliance_m->get_brands($enc['appliance_id'],$item[1]);
                                                         $type = $this->appliance_m->get_appliance_types($enc['appliance_id'],$item[2]);
-                                                        $issue[] = $brand['brand_name'].'->'.$type['type_name'].'-'.$tmp['issue_title'];
+                                                        $issue[] = $brand['brand_name'].' -> '.$type['type_name'].'-'.$tmp['issue_title'];
                                                         $flg=true;
                                                     }
                                                     if($flg){$issue = implode('<br />',$issue);}else{$issue='';}
@@ -64,7 +64,12 @@
                                                         <td><?php echo $type['type_name'];?></td>-->
                                                         <td data-label="Issue"><?php echo $issue;?></td>
                                                         <td data-label="Action">
-                                                            <a href="<?php echo site_url("public/main/details/".$enc['id']);?>" class="btn btn-primary btn-xs" title="Details"><i class="fa fa-list"></i></a>
+                                                            <a href="<?php echo site_url("public/main/details/".$enc['id']);?>" class="btn btn-primary btn-xs" data-toggle='tooltip' title="Details"><i class="fa fa-list"></i></a>
+                                                            <a href="<?php echo site_url("public/main/add_feedback/".$enc['id']);?>" class="btn btn-success btn-xs" data-toggle='tooltip' title="Review"><i class="fa fa-pencil"></i></a>
+                                                            <?php
+                                                            if($enc['status']==2){?>
+                                                            <a href="javascript:void(0);" onclick="getRank(<?php echo $enc['id'];?>);" class="btn btn-default btn-xs" title="Rank" data-toggle="modal" data-target="#myModal"><i class="fa fa-star" style="color:orange;"></i></a>
+                                                            <?php } ?>
                                                         </td>
                                                         <?php
                                                     echo '</tr>';
@@ -87,3 +92,44 @@
         </div>
     </div>
 </section>
+<!-- The Modal -->
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Rank</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div id='modal-msg'></div>
+            <div id='encForm'></div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <script>
+  function getRank(eid){
+    $.get('<?php echo site_url('public/main/getRank/');?>'+eid,function(data,status){
+        if(status=='success'){
+            $('#encForm').html(data);
+        }
+    })
+  }
+  function saveRank(rank,tid){
+    $.get('<?php echo site_url('public/main/saveRank/');?>'+rank+'/'+tid,function(data,status){
+        if(status=='success'){
+            $('#modal-msg').html('<div class="alert alert-success">Rank Save Succesfully!</div>');
+        }
+    })
+  }
+  </script>

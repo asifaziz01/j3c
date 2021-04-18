@@ -46,10 +46,10 @@ class Appliance_m extends CI_Model {
 		$data['appliance_name'] = $this->input->post ('appliance_name');
 		$data['service_type'] = $this->input->post ('service_type');
 		$data['category_id'] = $category_id;
-		/*$data['head_content'] = $this->input->post('head_content');
+		$data['head_content'] = $this->input->post('heading_content');
 		$data['body_content'] = $this->input->post('body_content');
 		if($_FILES['img']['name']){$data['body_content_image'] = $_FILES['img']['name'];}
-		$data['content'] = $this->input->post('content');*/
+		$data['content'] = $this->input->post('content');
 		if($_FILES['logo']['name']){$data['icon'] = 'services-icons/'.$_FILES['logo']['name'];}
 		$data['status'] = 1;
 		$data['position'] = 'position+1';
@@ -74,6 +74,16 @@ class Appliance_m extends CI_Model {
 	public function delete_appliance ($appliance_id=0) {
 	    $this->db->where ('appliance_id', $appliance_id);
 	    $sql = $this->db->delete ('appliances');
+		if($sql){
+			$sql1 = $this->delete_brand(false,array('appliance_id'=>$appliance_id));
+			if($sql){
+				$sql2 = $this->delete_type(false,array("appliance_id"=>$appliance_id));
+				if($sql){
+					$this->delete_issue(false,array('appliance_id'=>$appliance_id));
+					$this->db->where('appliance_id',$appliance_id)->delete('customer_enquiries');
+				}
+			}
+		}
 	}
 
 
@@ -96,8 +106,9 @@ class Appliance_m extends CI_Model {
 		$sql = ($brand_id)?$this->db->update ('appliance_brands', $data):$this->db->insert ('appliance_brands', $data);			
 	}
 
-	public function delete_brand ($brand_id=0) {
-	    $this->db->where ('brand_id', $brand_id);
+	public function delete_brand ($brand_id=0,$clause=false) {
+		if($clause){$this->db->where($clause);}
+	    if($brand_id){$this->db->where ('brand_id', $brand_id);}
 	    $sql = $this->db->delete ('appliance_brands');
 	}
 
@@ -126,8 +137,9 @@ class Appliance_m extends CI_Model {
 		return true;
 	}
 
-	public function delete_issue ($issue_id=0) {
-	    $this->db->where ('issue_id', $issue_id);
+	public function delete_issue ($issue_id=0,$clause=false) {
+	    if($issue_id){$this->db->where ('issue_id', $issue_id);}
+		if($clause){$this->db->where($clause);}
 	    $sql = $this->db->delete ('appliance_issues');
 	}
 
@@ -153,8 +165,9 @@ class Appliance_m extends CI_Model {
 		return true;
 	}
 	
-	public function delete_type ($type_id=0) {
-	    $this->db->where ('type_id', $type_id);
+	public function delete_type ($type_id=0,$clause=false) {
+		if($clause){$this->db->where($clause);}
+	    if($type_id){$this->db->where ('type_id', $type_id);}
 	    $sql = $this->db->delete ('appliance_types');
 	}
 	

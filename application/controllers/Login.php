@@ -71,7 +71,7 @@ class Login extends CI_Controller {
 		$data['no_banner'] = true;
 		// Create an instance of the user model
 		$this->form_validation->set_rules('login', 'Login', 'trim|required|htmlentities');
-		$this->form_validation->set_rules('password', 'Password', 'trim|required|htmlentities');
+		//$this->form_validation->set_rules('password', 'Password', 'trim|required|htmlentities');
 		
 		// Ensure values exist for email and pass, and validate the user's credentials		 
 		// If the user is valid, redirect to the main view		
@@ -84,8 +84,8 @@ class Login extends CI_Controller {
 			
 			// Grab the email and password from the form POST
 			$login = $this->input->post('login');
-			$pass  = $this->input->post('password');
-			$pass  = md5($pass);
+			//$pass  = $this->input->post('password');
+			//$pass  = md5($pass);
 			
 			// check if this is a member login
 			//$status = $this->login_m->get_user_status ($email, $pass/*, $remember*/);
@@ -93,12 +93,12 @@ class Login extends CI_Controller {
 
 			// get user status (admin/ins/student)
 			//$enabled = $this->login_m->get_user_status ($email, $pass, $remember, 2);	// get active status (enabled/disabled)
-			$sts = STATUS_CUSTOMER.','.STATUS_TECHNICIAN;
-			$status = $this->login_m->validate_user ($login, $pass, false, $sts);
+			$sts = ($this->input->post('user_type'))?$this->input->post('user_type'):STATUS_CUSTOMER.','.STATUS_TECHNICIAN;
+			$status = $this->login_m->validate_user ($login, false, false, $sts,true);
 			// this will validate if current user authentic to use resources
 			if ($status==STATUS_TECHNICIAN) {
 				$this->message->set("Successfully signed in.","success", true);
-				redirect('admin/main');
+				redirect('admin/user/edit_profile');
 			}else if ($status==STATUS_CUSTOMER) {
 				$this->message->set("Successfully signed in.","success", true);
 				redirect('public/main');
@@ -311,6 +311,49 @@ class Login extends CI_Controller {
 		//$this->load->view($this->config->item('template_path') . 'header', $data);
 		$this->load->view('registration', $data);
 		//$this->load->view($this->config->item('template_path') . 'footer', $data);
+	}
+	public function register_tech(){
+		$this->form_validation->set_rules ('category', 'Technician Category', 'required|trim');
+		$this->form_validation->set_rules ('uname', 'User Name', 'required|trim');
+		$this->form_validation->set_rules ('mobile', 'Mobile', 'required|trim|is_natural|exact_length[10]');
+		if ($this->form_validation->run () == true) {
+		    $pass = $this->default_m->genrateUniquiId(time(),6);
+			$technician_id = $this->login_m->add_technician ($pass);
+			$message = 'Technician added successfully';
+			$user = $this->user_m->getUser($technician_id);
+			$mobile = $user['phone'];
+			$message = 'You are register on just3click.com as Technician'.PHP_EOL.'Your id - '.$user['login'].PHP_EOL.'Password - '.$pass.PHP_EOL. '. Thank You.';
+			$this->sms->send($mobile,$message);
+			$this->message->set("Registration complete successfull!","success",true);
+			
+			if ($remember == 1) {				
+				setcookie('remember', md5($row->username), time()+12*3600, '/');
+			}
+			$this->session->set_userdata( array(
+							'login'			=> $user['username'],
+							'id'			=> $user['id'],
+							'name'			=> $user['name'],
+							'email'			=> $user['email'],
+							'post'			=> $user['post'],
+							'status'		=> $user['status'],
+							'isLoggedIn'	=> true
+							));
+
+			// save user login name in cookie
+
+			setcookie('loginIn', ($row['username']), time()+12*3600, '/');
+			// update current login time 
+			$this->db->where('username', $row['username']);
+			$this->db->update('user', array('last_login'=>date('Y-m-d H:i:s')) );
+
+			redirect("admin/main");
+		}
+
+		$data['page_title'] = 'Login';
+		$data['no_banner'] = true;
+		$this->load->view(INCLUDE_PATH."header", $data);
+		$this->load->view('login', $data);
+		$this->load->view(INCLUDE_PATH."footer", $data);
 	}
 	public function addProfilePic($uid=false,$img=false,$folder=false){
 			//===== image uploading code ======

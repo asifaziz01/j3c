@@ -11,7 +11,11 @@ class Main extends CI_Controller {
 		if(!$this->session->userdata("login")){
 			delete_cookie("loginIn");	
 		}else{
-			redirect('admin/main');
+			if($this->session->userdata("status")==STATUS_CUSTOMER){
+				redirect('public/main');
+			}else{
+				redirect('admin/main');
+			}
 		}
 		$userType = $this->default_m->getUserType();
 		if($userType){
@@ -57,7 +61,7 @@ class Main extends CI_Controller {
         $this->load->view ($this->config->item("template_path") . 'footer', $data);
 	}
     public function sendOTP($mobile=false,$name=false){
-        if($mobile && $name){
+        if($mobile){
             $res = $this->sms->sendOTP($mobile,$name);
             echo $res?$res:false;
         }else{
@@ -339,7 +343,10 @@ class Main extends CI_Controller {
             $this->message->set("Successfully signed in.","success", true);
 			$this->session->set_userdata("group_id",$user['status']);
             redirect('public/main/myBooking/');
-        }
+        }else{
+			$this->message->set(((validation_errors())?validation_errors():"Please try again!"),"danger", true);
+            redirect('main/finalCheckout');
+		}
         //$this->load->view (INCLUDE_PATH . 'header', $data);
         //$this->load->view ('public/services/enquiryConfirm', $data);
         //$this->load->view (INCLUDE_PATH . 'footer', $data);

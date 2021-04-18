@@ -43,16 +43,18 @@ if($this->session->userdata('status') != STATUS_SUPER){
 		if($this->session->userdata('status') == STATUS_TECHNICIAN){
 			$leftTime = ($this->wallet_m->calculateLeftTime($this->session->userdata('id')));
 			$tech_plan = $this->enquiry_m->get_technician_plan(false,$this->session->userdata('id'));
-			$isactiveJob = $this->enquiry_m->get_enquiries(false,array('technician_id'=>$this->session->userdata('id'),'close_date'=>''));
+			$isactiveJob = $this->enquiry_m->get_enquiries(false,array('technician_id'=>$this->session->userdata('id'),'FROM_UNIXTIME(j3c_customer_enquiries.enquiry_date,"%Y-%m-%d")'=>date('Y-m-d')));
 			$leftTime=($leftTime*(60*60));
 			?>
 			<div class="col-sm-12 col-md-4">
 				<div class="statbox widget box box-shadow">
 					<div class="widget-content">
+						<?php
+						if($tech_plan[0]['plan_type']==1){
+						?>
 						<div class="value">
-							<?php
-							if($tech_plan[0]['plan_type']==1){
-								if($isactiveJob){
+							<?php	
+							if($isactiveJob){
 								?>
 								<div id="cntimer">
 								<script type="text/javascript" src="<?php echo base_url($this->config->item('backend_path').'assets/js/countdown.js');?>"></script>
@@ -85,15 +87,25 @@ if($this->session->userdata('status') != STATUS_SUPER){
 								</script>
 								</div>
 								<?php
-								}else{
-									$lfttm = explode(':',$this->default_m->hour2countdown($leftTime));
-									echo '<span style="min-width:100px;padding:5px 5px 5px 5px;border:1px solid #999;background-color:#CCC;">'.$lfttm[0].'</span>'." : ";
-									echo '<span style="min-width:100px;padding:5px 5px 5px 5px;border:1px solid #999;background-color:#CCC;">'.$lfttm[1].'</span>'." : ";
-									echo '<span style="min-width:100px;padding:5px 5px 5px 5px;border:1px solid #999;background-color:#CCC;">'.$lfttm[2].'</span>';
-								}
+							}else{
+								$lfttm = explode(':',$this->default_m->hour2countdown($leftTime));
+								echo '<span style="min-width:100px;padding:5px 5px 5px 5px;border:1px solid #999;background-color:#CCC;">'.$lfttm[0].'</span>'." : ";
+								echo '<span style="min-width:100px;padding:5px 5px 5px 5px;border:1px solid #999;background-color:#CCC;">'.$lfttm[1].'</span>'." : ";
+								echo '<span style="min-width:100px;padding:5px 5px 5px 5px;border:1px solid #999;background-color:#CCC;">'.$lfttm[2].'</span>';
 							}
 						?>
 						</div>
+						<?php
+						}else{
+							$pickedJob = $this->enquiry_m->get_enquiries(false,array('technician_id'=>$this->session->userdata('id'),'close_date'=>''));
+							echo '<div class="visual yellow">
+									<i class="icon-cogs"></i>
+								</div>';
+							echo '<div class="title" style="font-size:1em">'.$tech_plan[0]['plan_hour'].' Service / Day</div>';
+							echo '<div class="value">'.(!$pickedJob?0:count($pickedJob)).' Picked</div>';
+							echo '<a class="more" href="'.site_url("admin/enquiries/index").'">View More <i class="pull-right icon-angle-right"></i></a>';
+						}
+						?>
 					</div>
 				</div> <!-- /.smallstat -->
 			</div> <!-- /.col-md-3 -->

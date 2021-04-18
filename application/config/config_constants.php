@@ -25,6 +25,10 @@ $config['javascript_path']		 	 = 'js/';
 $config['third_party_path']		 	 = 'application/third_party/';
 define('FILEMANAGER','template/file_manager/');
 define('BASE_URL', '');
+// User Work Status
+define ('WORK_STATUS_NOT_AVAILABLE', 		0);
+define ('WORK_STATUS_AVAILABLE', 			1);
+define ('WORK_STATUS_BUSY', 			    2);
 // Allowed file types to upload
 $config['allowed_extensions']		 = array ( 'jpg', 'jpeg', 'gif', 'png', 'bmp', 'txt', 'doc', 'rtf', 'docx', 'pdf', 'avi', 
 												   'mp3', 'flv', 'mp4', 'wmv', 'rar', 'zip' );
@@ -82,7 +86,7 @@ define ('REST_API', 				        'ynu7mjdxl4ls9axnu8qapfkculnjj8nu');
 $config['menu'] = array(
 						"home" => array("Home", "main/", ""),
 						/*"products" => array("Products", "main/products", ""),*/
-						"enquiry" => array("Enquiry Checkout", "main/enquiryBox", ""),
+						"enquiry" => array("Enquiries", "main/enquiryBox", ""),
 						"privecy" => array("Privecy & Policy", "main/privecy_policy", ""),
 						/*,"contact" => array("Contact Us", "main/contact", "")*/
 					);

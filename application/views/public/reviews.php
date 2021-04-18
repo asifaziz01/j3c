@@ -13,13 +13,13 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <h4><?php echo $page_title;?></h4>
-                                <table class="dataTable responsiveTable">
+                                <table class="responsive">
                                     <thead>
                                         <tr>
                                         <th>#</th>
                                         <th>Date</th>
-                                        <th>Feedback</th>
-                                        <th>Action</th>
+                                        <th>Review</th>
+                                        <!--<th>Action</th>-->
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -31,19 +31,18 @@
                                             <td><?php echo $sr++;?></td>
                                             <td data-label="Date"><?php echo date('d M Y H:i:s',strtotime($fb['date']));?></td>
                                             <td data-label="Feedback"><?php echo $fb['message'];?></td>
-                                            <td data-label="Action">
+                                            <!--<td data-label="Action">
                                                 <a href="javascript:void(0);" onclick="showConfirm('<?php echo site_url('public/main/deleteFeedback/'.$fb['id']);?>','Are you sure want to delelte?')" class="btn btn-danger btn-xs" title="Delete"><i class="fa fa-trash"></i></a>
-                                            </td>
+                                            </td>-->
                                             <?php
                                             echo '</tr>';
                                         }
                                     }else{
-                                        echo '<tr><td colspan="4">No enquiry found.</td></tr>';
+                                        echo '<tr><td colspan="3">No enquiry found.</td></tr>';
                                     }
                                     ?>
                                     </tbody>
                                 </table>
-                                <a href="<?php echo site_url('public/main/add_feedback');?>" class="btn btn-primary pull-right">Feedback</a>
                                 <br clear="all" /><br clear="all" />
                             </div>
                         </div>

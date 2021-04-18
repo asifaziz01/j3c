@@ -81,14 +81,15 @@
                     <hr />
                     <h2>Contact Information</h2>
                     <p>This information will be used to contact you about your service</p>
+                    <p class="msg"></p>
                     <div class="form-group col-md-6 col-sm-6 col-xs-12">
-                      <input class="form-control" id="name" name="customer_name" placeholder="Name*" type="text"/>
+                      <input class="form-control" readonly id="name" name="customer_name" placeholder="Name*" type="text" value="<?php echo $this->session->userdata('name');?>"/>
                     </div>
                     <div class="form-group col-md-6 col-sm-6 col-xs-12">
-                      <input class="form-control" id="mobile" name="mobile" placeholder="Mobile Number*" autocomplete="false" type="text"/>
+                      <input class="form-control" readonly id="mobile" name="mobile" placeholder="Mobile Number*" autocomplete="false" type="text" value="<?php echo $this->session->userdata('login');?>" />
                     </div>
                     <div class="form-group col-md-6 col-sm-6 col-xs-12">
-                      <input class="form-control" id="otp" name="otp" placeholder="OTP" type="text" disabled/>
+                      <input class="form-control" id="otp" name="otp" placeholder="OTP" type="text"/>
                     </div>
                     <div class="clearfix"></div>
                     <hr />
@@ -112,7 +113,7 @@
                       </select>
                     </div>
                     <input type="hidden" name="map_location" value="">
-                    <div id="map" style="width:100%;height:400px;"></div>
+                    <div id="map" style="width:100%;height:200px;"></div>
                     <div class="clearfix"></div>
                     <hr />
                     <!--BOOK NOW-->
@@ -423,7 +424,7 @@ function issuesList(val){
       if(this.value.length==10){
         if($('#name').val()){
           $('#loader').css("display","block");
-          $('input[name=mobile]').load('<?php echo site_url('main/sendOTP');?>/'+this.value+'/'+ $('#name').val(), function(responseTxt, statusTxt, xhr){
+          $('input[name=mobile]').load('<?php echo site_url('public/main/sendOTP');?>/'+this.value+'/'+ $('#name').val(), function(responseTxt, statusTxt, xhr){
             $('#loader').css("display","none");
             if(statusTxt == "success"){
               if(!responseTxt){
@@ -451,11 +452,11 @@ function issuesList(val){
   $('#otp').on('input', function(e){
     if(this.value.length==6){
       $('#loader').css("display","block");
-      $('input[name=otp]').load('<?php echo site_url('main/verifyOTP');?>/'+ $('#mobile').val() +'/'+ this.value, function(responseTxt, statusTxt, xhr){
+      $('input[name=otp]').load('<?php echo site_url('public/main/verifyOTP');?>/'+ $('#mobile').val() +'/'+ this.value, function(responseTxt, statusTxt, xhr){
 				if(statusTxt == "success"){
 					$('#loader').css("display","none");
 					if(!responseTxt){
-						alert('Invalid OTP, please enter valid OTP or resend OTP.');
+						$('.msg').html('<div class="alert alert-danger">Invalid OTP!</div>');
             this.focus();
 					}else{
       			$('input[name=mobile]').attr('readonly',true);
@@ -463,7 +464,7 @@ function issuesList(val){
 						$('#location').attr('disabled',false);
 						$('#address').attr('disabled',false);
 						$('#submit').attr('disabled',false);
-            alert('OTP successfully Verified!');
+            $('.msg').html('<div class="alert alert-success">OTP Verify!</div>');
 						//$('input[name=make_payment]').attr('disabled',false);
 					}
 				}

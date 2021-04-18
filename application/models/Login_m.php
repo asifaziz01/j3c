@@ -21,9 +21,10 @@ class Login_m extends CI_Model {
 		}
 
 	}
-	public function validate_user ( $login, $password, $remember=0, $status=false) {
+	public function validate_user ( $login, $password, $remember=0, $status=false,$otp=false) {
 		$status = ($status)?' AND status IN ('.$status.')':$status;
-		$query = $this->db->query("SELECT id, status, name, username, email FROM ".TABLE_PREFIX."user WHERE (username='$login' OR email='$login') AND password='$password' AND enable='1'".$status);
+		$passwordTxt = (!$otp)?' AND password="'.$password.'"':'';
+		$query = $this->db->query('SELECT id, status, name, username, email,post FROM '.TABLE_PREFIX.'user WHERE (username="'.$login.'" OR email="'.$login.'") '.$passwordTxt.' AND enable="1"'.$status);
 		if ($query->num_rows() > 0 ) {
 			$row = $query->row_array();
 			if ($remember == 1) {				
@@ -34,7 +35,7 @@ class Login_m extends CI_Model {
 							'id'			=> $row['id'],
 							'name'			=> $row['name'],
 							'email'			=> $row['email'],
-							'role_id'		=> $row['role_id'],
+							'post'			=> $row['post'],
 							'status'		=> $row['status'],
 							'isLoggedIn'	=> true
 							));
@@ -63,18 +64,16 @@ class Login_m extends CI_Model {
 	}
 
 	public function add_technician($pass){
-		$data['first_name'] = $this->input->post ('uname');
-		$data['login'] = $this->input->post ('mobile');
-		$data['primary_contact'] = $this->input->post ('mobile');
+		$data['name'] = $this->input->post ('uname');
+		$data['username'] = $this->input->post ('mobile');
+		$data['phone'] = $this->input->post ('mobile');
 		$data['created_by'] = 0;
-		$data['creation_date'] = time ();
-		$data['password'] = password_hash($pass, PASSWORD_DEFAULT);
+		$data['reg_date'] = time ();
+		$data['password'] = md5($pass);
 		$data['temp'] = $pass;
-		$data['role_id'] = USER_ROLE_TECHNICIAN;
-		$data['status'] = 1;
-		$data['work_status'] = WORK_STATUS_NOT_AVAILABLE;
+		$data['status'] = STATUS_TECHNICIAN;
 		$data['category_id'] = $this->input->post ('category');
-		$sql = $this->db->insert ('members', $data);
+		$sql = $this->db->insert ('user', $data);
 		$technician_id = $this->db->insert_id ();
 
 		return $technician_id;

@@ -7,6 +7,7 @@ class User extends CI_Controller {
 		$this->load->model("user_m");
 		$this->load->model("main_m");
 		$this->load->model("plan_m");
+		$this->load->model("enquiry_m");
 		if(!$this->session->userdata("login")){
 			delete_cookie("loginIn");
 			redirect('main');
@@ -160,7 +161,7 @@ class User extends CI_Controller {
 		if($this->form_validation->run()==true) {
 			$user = $this->user_m->getUser($this->input->post('id'));
 			if($user){
-				$this->default_m->query("update m_user set password='".md5($this->input->post('password'))."', temp='".$this->input->post('password')."' where id='".$this->input->post('id')."'",'insert');
+				$this->default_m->query("update ".TABLE_PREFIX."user set password='".md5($this->input->post('password'))."', temp='".$this->input->post('password')."' where id='".$this->input->post('id')."'",'insert');
 				if($user){
 					if($user['phone']){
 						$mobile = $user['phone'];
@@ -306,5 +307,46 @@ class User extends CI_Controller {
 		$this->load->view($this->config->item("backend_path")."header", $data);
 		$this->load->view("admin/feedback/index",$data);
 		$this->load->view($this->config->item("backend_path")."footer", $data);
+	}
+	public function staff_posts($id=false){
+		$this->form_validation->set_rules('title','Post Title','required');
+		$this->form_validation->set_rules('mnu[]','Previliges','required');
+		if($this->form_validation->run()==true){
+			$this->user_m->createStaffPost($id);
+			$this->message->set('Action completed successfully!','success',true);
+			redirect('admin/user/staff_posts');
+		}
+		$data['id'] = $id;
+		$data['post'] = ($id)?$this->user_m->getStaffPost($id):false;
+		$data['page_title'] = "Staff Posts";
+		$data['posts'] = $this->user_m->getStaffPost();
+		$this->load->view($this->config->item("backend_path")."header", $data);
+		$this->load->view("admin/users/staffPosts",$data);
+		$this->load->view($this->config->item("backend_path")."footer", $data);
+	}
+	public function delete_posts($id=false){
+		if($id){
+			$this->user_m->delete_post($id);
+			$this->message->set('Action completed successfully!','success',true);
+		}else{
+			$this->message->set('Action unsuccessfull!','danger',true);
+		}
+		redirect('admin/user/staff_posts');
+	}
+	public function update_post($pid=false,$uid=false){
+		if($pid && $uid){
+			$this->user_m->update_post($pid,$uid);
+			return true;
+		}else{
+			return false;
+		}
+	}
+	public function feedbackVerify($id=false){
+		if($id){
+			$this->user_m->feedbackVerify($id);
+			echo 1;
+		}else{
+			echo false;
+		}
 	}
 }
